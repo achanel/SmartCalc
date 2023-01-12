@@ -20,6 +20,9 @@ public class Panel extends JPanel{
     private JButton multi = new JButton("*");
     private JButton dev = new JButton("/");
 
+    private JButton leftBracket = new JButton("(");
+    private JButton rightBracket = new JButton(")");
+
     private JButton sin = new JButton("sin");
     private JButton cos = new JButton("cos");
     private JButton tan = new JButton("tan");
@@ -33,7 +36,7 @@ public class Panel extends JPanel{
     private JButton ln = new JButton("ln");
     private JButton log = new JButton("log");
     private JButton sqrt = new JButton("\u221A");
-    private JButton deg = new JButton("x^y");
+    private JButton pow = new JButton("x^y");
 
     private JButton deposit = new JButton("DEP");
     private JButton credit = new JButton("CRED");
@@ -51,14 +54,11 @@ public class Panel extends JPanel{
             if (b == clear) {
                 output.setText("");
             } else if (b == backspace) {
-                int length = output.getText().length();
-                int number = length - 1;
-                if (length > 0) {
+                if (output.getText().length() > 0) {
                     StringBuilder back = new StringBuilder(output.getText());
-                    back.deleteCharAt(number);
+                    back.deleteCharAt(output.getText().length() - 1);
                     output.setText(back.toString());
-                } if (output.getText().endsWith(""));
-                output.setText("");
+                }
             } else if (b == numbers[0]) {
                 if (output.getText().equals("0"))
                     return;
@@ -87,17 +87,67 @@ public class Panel extends JPanel{
                     return;
                 else
                     output.setText(output.getText() + ".");
-
+            } else if (b == leftBracket) {
+                output.setText(output.getText() + "(");
+            } else if (b == rightBracket) {
+                output.setText(output.getText() + ")");
             } else if (b == plus) {
                 numA = Double.parseDouble(output.getText());
                 calc = 1;
                 output.setText("");
-            }  else if (b == minus) {
+            } else if (b == minus) {
                 numA = Double.parseDouble(output.getText());
                 calc = 2;
                 output.setText("");
+            } else if (b == multi) {
+                numA = Double.parseDouble(output.getText());
+                calc = 3;
+                output.setText("");
+            } else if (b == dev) {
+                numA = Double.parseDouble(output.getText());
+                calc = 4;
+                output.setText("");
+            } else if (b == mod) {
+                numA = Double.parseDouble(output.getText());
+                calc = 5;
+                output.setText("");
+            } else if (b == ln) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.log(numA)));
+            } else if (b == log) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.log10(numA)));
+            } else if (b == sqrt) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.sqrt(numA)));
+            } else if (b == pow) {
+                numA = Double.parseDouble(output.getText());
+                calc = 6;
+                output.setText("");
+            } else if (b == sin) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.sin(numA)));
+            } else if (b == cos) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.cos(numA)));
+            } else if (b == tan) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.tan(numA)));
+            } else if (b == asin) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.asin(numA)));
+            } else if (b == acos) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.acos(numA)));
+            } else if (b == atan) {
+                numA = Double.parseDouble(output.getText());
+                output.setText(Double.toString(Math.atan(numA)));
+            } else if (b == pm) {
+                numA = Double.parseDouble(output.getText()) * -1;
+                output.setText(Double.toString(numA));
             } else if (b == equ) {
-                numB = Double.parseDouble(output.getText());
+                if (!output.getText().isEmpty())
+                    numB = Double.parseDouble(output.getText());
                 switch (calc){
                     case 1:
                         result = numA + numB;
@@ -105,11 +155,23 @@ public class Panel extends JPanel{
                     case 2:
                         result = numA - numB;
                         break;
-                } if (Double.toString(result).endsWith(".0")) {
+                    case 3:
+                        result = numA * numB;
+                        break;
+                    case 4:
+                        result = numA / numB;
+                        break;
+                    case 5:
+                        result = numA % numB;
+                        break;
+                    case 6:
+                        result = Math.pow(numA, numB);
+                        break;
+                } if (Double.toString(result).endsWith(".0"))
                     output.setText(Double.toString(result).replace(".0", ""));
-                } else {
+                else
                     output.setText(Double.toString(result));
-                }
+                numA = 0;
             }
         };
 
@@ -142,6 +204,15 @@ public class Panel extends JPanel{
         add(dev);
         dev.addActionListener(l);
 
+        leftBracket.setBounds(250, 370, 50, 50);
+        leftBracket.setFont(font);
+        add(leftBracket);
+        leftBracket.addActionListener(l);
+        rightBracket.setBounds(310, 370, 50, 50);
+        rightBracket.setFont(font);
+        add(rightBracket);
+        rightBracket.addActionListener(l);
+
         sin.setBounds(10, 70, 50, 50);
         add(sin);
         sin.addActionListener(l);
@@ -170,9 +241,9 @@ public class Panel extends JPanel{
         sqrt.setBounds(310, 250, 50, 50);
         add(sqrt);
         sqrt.addActionListener(l);
-        deg.setBounds(310, 310, 50, 50);
-        add(deg);
-        deg.addActionListener(l);
+        pow.setBounds(310, 310, 50, 50);
+        add(pow);
+        pow.addActionListener(l);
 
         clear.setBounds(70, 70, 50, 50);
         clear.setFont(font);
@@ -217,9 +288,10 @@ public class Panel extends JPanel{
             public void keyPressed(KeyEvent e) {
                 char symbol = e.getKeyChar();
 
-                if (!Character.isDigit(symbol))
+                if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.')
+                    output.setText(output.getText() + symbol);
+                else
                     return;
-                output.setText(output.getText() + symbol);
             }
         });
     }
