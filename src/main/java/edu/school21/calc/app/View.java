@@ -7,44 +7,55 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class Panel extends JPanel{
-    private  JButton numbers[] = new JButton[10];
-    private Font font = new Font("SanSerif", Font.BOLD, 20);
-    private JTextField output = new JTextField();
-    private JButton backspace = new JButton("B");
-    private JButton clear = new JButton("C");
-    private JButton mod = new JButton("mod");
-    private JButton equ = new JButton("=");
-    private JButton plus = new JButton("+");
-    private JButton minus = new JButton("-");
-    private JButton multi = new JButton("*");
-    private JButton dev = new JButton("/");
+public class View extends JPanel{
+    private Presenter presenter;
+    private final JTextField output = new JTextField();
+    private final Font font = new Font("SanSerif", Font.BOLD, 20);
+    private final JButton[] numbers = new JButton[10];
+    private final JButton clear = new JButton("C");
+    private final JButton backspace = new JButton("B");
+    private final JButton mod = new JButton("mod");
+    private final JButton equ = new JButton("=");
+    private final JButton plus = new JButton("+");
+    private final JButton minus = new JButton("-");
+    private final JButton multi = new JButton("*");
+    private final JButton dev = new JButton("/");
 
-    private JButton leftBracket = new JButton("(");
-    private JButton rightBracket = new JButton(")");
+    private final JButton leftBracket = new JButton("(");
+    private final JButton rightBracket = new JButton(")");
 
-    private JButton sin = new JButton("sin");
-    private JButton cos = new JButton("cos");
-    private JButton tan = new JButton("tan");
-    private JButton asin = new JButton("asin");
-    private JButton acos = new JButton("acos");
-    private JButton atan = new JButton("atan");
+    private final JButton sin = new JButton("sin");
+    private final JButton cos = new JButton("cos");
+    private final JButton tan = new JButton("tan");
+    private final JButton asin = new JButton("asin");
+    private final JButton acos = new JButton("acos");
+    private final JButton atan = new JButton("atan");
 
-    private JButton dot = new JButton(".");
-    private JButton pm = new JButton("+/-");
+    private final JButton pm = new JButton("+/-");
+    private final JButton dot = new JButton(".");
 
-    private JButton ln = new JButton("ln");
-    private JButton log = new JButton("log");
-    private JButton sqrt = new JButton("\u221A");
-    private JButton pow = new JButton("x^y");
+    private final JButton ln = new JButton("ln");
+    private final JButton log = new JButton("log");
+    private final JButton sqrt = new JButton("\u221A");
+    private final JButton pow = new JButton("x^y");
 
-    private JButton deposit = new JButton("DEP");
-    private JButton credit = new JButton("CRED");
+    private final JButton deposit = new JButton("DEP");
+    private final JButton credit = new JButton("CRED");
+
     private double numA = 0;
     private double numB = 0;
-    private double result = 0;
-    private int calc;
-    public Panel(){
+    void addPresenter(final Presenter p){
+        presenter = p;
+    }
+    public View(){
+        final JFrame window = new JFrame("SmartCalc");
+        window.setSize(370, 447);
+        window.add(this);
+        window.setLocationRelativeTo(null);
+        window.setResizable(false);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setVisible(true);
+
         setLayout(null);
         setFocusable(true);
         grabFocus();
@@ -83,97 +94,58 @@ public class Panel extends JPanel{
             } else if (b == numbers[9]){
                 output.setText(output.getText() + "9");
             } else if (b == dot) {
-                if (output.getText().contains("."))
-                    return;
-                else
-                    output.setText(output.getText() + ".");
+                output.setText(output.getText() + ".");
             } else if (b == leftBracket) {
                 output.setText(output.getText() + "(");
             } else if (b == rightBracket) {
                 output.setText(output.getText() + ")");
             } else if (b == plus) {
-                numA = Double.parseDouble(output.getText());
-                calc = 1;
-                output.setText("");
+                output.setText(output.getText() + "+");
             } else if (b == minus) {
-                numA = Double.parseDouble(output.getText());
-                calc = 2;
-                output.setText("");
+                output.setText(output.getText() + "-");
             } else if (b == multi) {
-                numA = Double.parseDouble(output.getText());
-                calc = 3;
-                output.setText("");
+                output.setText(output.getText() + "*");
             } else if (b == dev) {
-                numA = Double.parseDouble(output.getText());
-                calc = 4;
-                output.setText("");
-            } else if (b == mod) {
-                numA = Double.parseDouble(output.getText());
-                calc = 5;
-                output.setText("");
-            } else if (b == ln) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.log(numA)));
-            } else if (b == log) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.log10(numA)));
-            } else if (b == sqrt) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.sqrt(numA)));
-            } else if (b == pow) {
-                numA = Double.parseDouble(output.getText());
-                calc = 6;
-                output.setText("");
+                output.setText(output.getText() + "/");
             } else if (b == sin) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.sin(numA)));
+                output.setText(output.getText() + "sin");
             } else if (b == cos) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.cos(numA)));
+                output.setText(output.getText() + "cos");
             } else if (b == tan) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.tan(numA)));
+                output.setText(output.getText() + "tan");
             } else if (b == asin) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.asin(numA)));
+                output.setText(output.getText() + "asin");
             } else if (b == acos) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.acos(numA)));
+                output.setText(output.getText() + "acos");
             } else if (b == atan) {
-                numA = Double.parseDouble(output.getText());
-                output.setText(Double.toString(Math.atan(numA)));
+                output.setText(output.getText() + "atan");
+            } else if (b == ln) {
+                output.setText(output.getText() + "ln");
+            } else if (b == log) {
+                output.setText(output.getText() + "log");
+            } else if (b == sqrt) {
+                output.setText(output.getText() + "sqrt");
+            } else if (b == pow) {
+                output.setText(output.getText() + "^");
+            } else if (b == mod) {
+                output.setText(output.getText() + "%");
             } else if (b == pm) {
-                numA = Double.parseDouble(output.getText()) * -1;
-                output.setText(Double.toString(numA));
+                output.setText(output.getText() + "-");
             } else if (b == equ) {
-                if (!output.getText().isEmpty())
-                    numB = Double.parseDouble(output.getText());
-                switch (calc){
-                    case 1:
-                        result = numA + numB;
-                        break;
-                    case 2:
-                        result = numA - numB;
-                        break;
-                    case 3:
-                        result = numA * numB;
-                        break;
-                    case 4:
-                        result = numA / numB;
-                        break;
-                    case 5:
-                        result = numA % numB;
-                        break;
-                    case 6:
-                        result = Math.pow(numA, numB);
-                        break;
-                } if (Double.toString(result).endsWith(".0"))
-                    output.setText(Double.toString(result).replace(".0", ""));
-                else
-                    output.setText(Double.toString(result));
-                numA = 0;
+                presenter.keyPressed(output.getText());
             }
         };
+            addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    char symbol = e.getKeyChar();
+
+                    if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.')
+                        output.setText(output.getText() + symbol);
+                    else
+                        return;
+                }
+            });
 
         pm.setBounds(70, 310, 50, 50);
         add(pm);
@@ -275,24 +247,18 @@ public class Panel extends JPanel{
                 add(numbers[x * 3 + y + 1]);
             }
 
+        for(JButton b : numbers)
+            b.addActionListener(l);
+
         output.setBounds(10, 10, 350, 50);
         output.setFont(font);
         output.setEditable(true);
         add(output);
-
-        for(JButton b : numbers)
-            b.addActionListener(l);
-
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                char symbol = e.getKeyChar();
-
-                if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.')
-                    output.setText(output.getText() + symbol);
-                else
-                    return;
-            }
-        });
+    }
+    void printResult(Double result){
+        if (Double.toString(result).endsWith(".0"))
+            output.setText(Double.toString(result).replace(".0", ""));
+        else
+            output.setText(Double.toString(result));
     }
 }
