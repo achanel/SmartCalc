@@ -4,9 +4,9 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public Main(){
-        final View view = new View();
-        final Model model = new Model();
-        new Presenter(view, model);
+        final CalcView calcView = new CalcView();
+        final CalcModel calcModel = new CalcModel();
+        new Presenter(calcView, calcModel);
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

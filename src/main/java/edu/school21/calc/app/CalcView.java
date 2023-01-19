@@ -7,23 +7,24 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class View extends JPanel{
+public class CalcView extends JPanel{
     private Presenter presenter;
     private final JTextField output = new JTextField();
     private final Font font = new Font("SanSerif", Font.BOLD, 20);
     private final JButton[] numbers = new JButton[10];
     private final JButton clear = new JButton("C");
     private final JButton backspace = new JButton("B");
+    private final JButton functions = new JButton("F");
     private final JButton mod = new JButton("mod");
     private final JButton equ = new JButton("=");
     private final JButton plus = new JButton("+");
     private final JButton minus = new JButton("-");
     private final JButton multi = new JButton("*");
     private final JButton dev = new JButton("/");
-
     private final JButton leftBracket = new JButton("(");
     private final JButton rightBracket = new JButton(")");
-
+    private final JButton history = new JButton("his");
+    private final JButton clearHistory = new JButton(	"clh");
     private final JButton sin = new JButton("sin");
     private final JButton cos = new JButton("cos");
     private final JButton tan = new JButton("tan");
@@ -42,12 +43,10 @@ public class View extends JPanel{
     private final JButton deposit = new JButton("DEP");
     private final JButton credit = new JButton("CRED");
 
-    private double numA = 0;
-    private double numB = 0;
     void addPresenter(final Presenter p){
         presenter = p;
     }
-    public View(){
+    public CalcView(){
         final JFrame window = new JFrame("SmartCalc");
         window.setSize(370, 447);
         window.add(this);
@@ -132,7 +131,14 @@ public class View extends JPanel{
             } else if (b == pm) {
                 output.setText(output.getText() + "-");
             } else if (b == equ) {
+                presenter.printHistory(output.getText(), 0);
                 presenter.keyPressed(output.getText());
+            } else if (b == history) {
+                output.setText(presenter.history("print"));
+            } else if (b == clearHistory) {
+                presenter.history("clear");
+            } else if (b == functions) {
+                SwingUtilities.invokeLater(FunctionView::new);
             }
         };
             addKeyListener(new KeyAdapter() {
@@ -140,7 +146,7 @@ public class View extends JPanel{
                 public void keyPressed(KeyEvent e) {
                     char symbol = e.getKeyChar();
 
-                    if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.')
+                    if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.' || symbol == 'E')
                         output.setText(output.getText() + symbol);
                     else
                         return;
@@ -176,11 +182,11 @@ public class View extends JPanel{
         add(dev);
         dev.addActionListener(l);
 
-        leftBracket.setBounds(250, 370, 50, 50);
+        leftBracket.setBounds(310, 370, 25, 50);
         leftBracket.setFont(font);
         add(leftBracket);
         leftBracket.addActionListener(l);
-        rightBracket.setBounds(310, 370, 50, 50);
+        rightBracket.setBounds(335, 370, 25, 50);
         rightBracket.setFont(font);
         add(rightBracket);
         rightBracket.addActionListener(l);
@@ -238,6 +244,16 @@ public class View extends JPanel{
         credit.setBounds(310, 70, 50, 50);
         add(credit);
         credit.addActionListener(l);
+        history.setBounds(70, 370, 50, 25);
+        add(history);
+        history.addActionListener(l);
+        clearHistory.setBounds(70, 395, 50, 25);
+        add(clearHistory);
+        clearHistory.addActionListener(l);
+        functions.setBounds(250, 370, 50, 50);
+        functions.setFont(font);
+        add(functions);
+        functions.addActionListener(l);
 
         for(int x = 0; x < 3; x++ )
             for(int y = 0; y < 3; y++){
@@ -256,9 +272,17 @@ public class View extends JPanel{
         add(output);
     }
     void printResult(Double result){
-        if (Double.toString(result).endsWith(".0"))
+        if (Double.toString(result).endsWith(".0")) {
             output.setText(Double.toString(result).replace(".0", ""));
-        else
+            presenter.printHistory(Double.toString(result).replace(".0", ""), 1);
+        } else {
             output.setText(Double.toString(result));
+            presenter.printHistory(Double.toString(result), 1);
+        }
+    }
+
+    void printError(String err){
+//        output.setForeground(Color.RED);
+        output.setText(err);
     }
 }
