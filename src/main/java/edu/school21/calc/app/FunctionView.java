@@ -77,46 +77,44 @@ public class FunctionView extends JPanel {
         error.setSize(170, 20);
         add(error);
 
-        draw.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                f = fInput.getText();
-                if (!f.equals("")) {
-                    set("");
-                    x1 = Double.parseDouble(minInputX.getText());
-                    x2 = Double.parseDouble(maxInputX.getText());
-                    try {
-                        if (x1 < x2) {
-                            set("");
-                            y1 = Double.parseDouble(minInputY.getText());
-                            y2 = Double.parseDouble(maxInputY.getText());
-                            try {
-                                if (y1 < y2) {
-                                    set("");
-                                    set("Good");
-                                    try {
-                                        FunctionDraw p = new FunctionDraw(x1, x2, y1, y2, f);
-                                    } catch (Exception w3) {
-                                        set("Draw error");
-                                        System.out.println(w3);
-                                    }
-                                } else {
-                                    set("Bad Y");
+        draw.addActionListener(e -> {
+            f = fInput.getText();
+            if (!f.equals("")) {
+                set("");
+                x1 = Double.parseDouble(minInputX.getText());
+                x2 = Double.parseDouble(maxInputX.getText());
+                try {
+                    if (x1 < x2) {
+                        set("");
+                        y1 = Double.parseDouble(minInputY.getText());
+                        y2 = Double.parseDouble(maxInputY.getText());
+                        try {
+                            if (y1 < y2) {
+                                set("");
+                                set("Good");
+                                try {
+                                    FunctionDraw p = new FunctionDraw(x1, x2, y1, y2, f);
+                                } catch (Exception w3) {
+                                    set("Draw error");
+                                    System.out.println(w3);
                                 }
-                            } catch (Exception w1) {
-                                set("Bad location");
+                            } else {
+                                set("Bad Y");
                             }
-                        } else {
-                            set("Bad X");
+                        } catch (Exception w1) {
+                            set("Bad location");
                         }
-
-                    } catch (Exception w2) {
-                        set("некорректные координаты");
+                    } else {
+                        set("Bad X");
                     }
-                } else {
-                    set("Need a function");
-                }
 
+                } catch (Exception w2) {
+                    set("некорректные координаты");
+                }
+            } else {
+                set("Need a function");
             }
+
         });
     }
 

@@ -139,6 +139,10 @@ public class CalcView extends JPanel{
                 presenter.history("clear");
             } else if (b == functions) {
                 SwingUtilities.invokeLater(FunctionView::new);
+            } else if (b == credit) {
+                SwingUtilities.invokeLater(CreditView::new);
+            } else if (b == deposit) {
+                SwingUtilities.invokeLater(DepositView::new);
             }
         };
             addKeyListener(new KeyAdapter() {
