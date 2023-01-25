@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class DepositView extends JPanel{
-    final JFrame depositWindow = new JFrame("Credit Calculator");
+    final JFrame depositWindow = new JFrame("Deposit Calculator");
 
     public DepositView() {
         depositWindow.setSize(330, 537);

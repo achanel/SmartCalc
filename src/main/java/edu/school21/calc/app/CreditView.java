@@ -73,6 +73,7 @@ public class CreditView extends JPanel {
         output.setVisible(true);
         add(scrollPane);
         calculate.addActionListener(e -> {
+            output.setText("Результаты расчета:\n\n");
             try {
                 double sumCheck = Double.parseDouble(sumInput.getText());
                 double percentCheck = Double.parseDouble(percentInput.getText());
@@ -93,7 +94,7 @@ public class CreditView extends JPanel {
                         output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
                         output.append("Общая выплата: " + decimalFormat.format(creditModel.getResult()));
                     } else if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("аннуитетный")) {
-                        output.append("Ежемесячная плата месяц: " +
+                        output.append("Ежемесячная плата: " +
                                 decimalFormat.format(creditModel.getMonthPay()) + "\n");
                         double overpayment = creditModel.getResult() - Double.parseDouble(sumInput.getText());
                         output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");

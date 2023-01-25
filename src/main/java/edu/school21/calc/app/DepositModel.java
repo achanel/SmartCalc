@@ -6,7 +6,7 @@ public class DepositModel {
 
     private final double finalPercent;
     private final double finalTax;
-    private double finalSum = 0.0;
+    private double finalSum;
 
     private double everyPayment = 0.0;
 
@@ -64,40 +64,31 @@ public class DepositModel {
         }
         double capital = 0.0;
         double payment = -1.0;
-        double capPeriod = 0.0;
         if (Objects.equals(accrual, "Добавлять ко вкладу")){
             switch (cap) {
                 case "ежедневно":
                     capital = 365.0;
-                    capPeriod = 1.0;
                     break;
                 case "еженедельно":
                     capital = 52.0;
-                    capPeriod = 7;
                     break;
                 case "раз в месяц":
                     capital = 12.0;
-                    capPeriod = 30.0;
                     break;
                 case "раз в 2 месяца":
                     capital = 6.0;
-                    capPeriod = 61;
                     break;
                 case "раз в квартал":
                     capital = 4.0;
-                    capPeriod = 91;
                     break;
                 case "раз в 4 месяца":
                     capital = 3.0;
-                    capPeriod = 122;
                     break;
                 case "раз в полгода":
                     capital = 2.0;
-                    capPeriod = 183;
                     break;
                 case "раз в год":
                     capital = 1.0;
-                    capPeriod = 365;
                     break;
             }
         } else if (Objects.equals(accrual, "Выплачивать")) {
@@ -134,6 +125,7 @@ public class DepositModel {
         double replenishment = 0.0;
         switch (repStr) {
             case "не предусмотрено":
+                replenishment = 0.0;
                 break;
             case "раз в месяц":
                 replenishment = 12.0;
@@ -162,40 +154,36 @@ public class DepositModel {
                 profit = (sum * percent * duration / 365) / 100;
                 finalTax = profit * (tax / 100);
                 finalSum = sum + profit - finalTax;
-                if (payment == 0.0)
-                    everyPayment = profit;
-                else
-                    everyPayment = profit / (payment * years);
-            } else {//???
-//                double tmp = capital / 365;
-//                tmp = sum * percent * tmp / 100;
-//                profit = tmp * capPeriod;
-//                profit += profit * 0.04881126;
-                profit = ((1 + percent / 100 * capital) * (capital * years - 1)) * 100 * years;
-                finalTax = profit * (tax / 100);
-                finalSum = sum + profit - finalTax;
-            }
-        } else {
-            double period = years * replenishment;
-            if (capital == 0.0) {///???
-                for(double i = 0.0; i < period; i++) {
-                    profit += ((percent / 100 * (sum + i * rep) * duration) / (100 * 365));
-                }
-                finalTax = profit * (tax / 100);
-                finalSum = sum + profit - finalTax;
-                if (payment == 0.0)
-                    everyPayment = profit;
-                else
-                    everyPayment = profit / (payment * years);
-            } else {//---
+                if (payment == 0.0) everyPayment = profit;
+                else everyPayment = profit / (payment * years);
+            } else {
                 percent /= 100;
-                for(double i = 0.0; i < period; i++) {
-                    finalSum += (sum + i * rep) * Math.pow((1 + (percent / capital)), duration);
-                }
+                finalSum = sum * Math.pow((1 + percent/365), duration);
                 profit = finalSum - sum;
                 finalTax = profit * (tax / 100);
             }
+        } else {
+//            double period = years * replenishment;
+//            if (capital == 0.0) {///???
+//                finalSum = sum;
+//                for (double i = 0.0; i < period; i++) {
+//                    profit = ((sum + profit + rep) * percent * duration / 365) / 100;
+//                    finalSum += profit;
+//                }
+//                finalTax = profit * (tax / 100);
+//                finalSum -= finalTax;
+//                if (payment == 0.0) everyPayment = profit;
+//                else everyPayment = profit / (payment * years);
+//            } else {//---
+//                percent /= 100;
+//                for (double i = 0.0; i < period; i++) {
+//
+//                }
+//                finalSum = sum * Math.pow((1 + percent / 365), duration);
+//                profit = finalSum - sum;
+//                finalTax = profit * (tax / 100);
+//            }
         }
         finalPercent = profit;
-    }
+        }
 }
