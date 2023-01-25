@@ -76,30 +76,30 @@ public class CreditView extends JPanel {
             try {
                 double sumCheck = Double.parseDouble(sumInput.getText());
                 double percentCheck = Double.parseDouble(percentInput.getText());
-            if(percentCheck < 0 || percentCheck > 100.0)
-                output.append("Wrong Input!");
-            else {
-                DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                CreditModel creditModel = new CreditModel(Double.parseDouble(sumInput.getText()),
-                        Objects.requireNonNull(durationInput.getSelectedItem()).toString(),
-                        Double.parseDouble(percentInput.getText()),
-                        Objects.requireNonNull(typeInput.getSelectedItem()).toString());
-                if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("дифференцированный")){
-                    int monthCount = 1;
-                    for (String month : creditModel.getArray()) {
-                        output.append(monthCount++ + "месяц: " + month + "\n");
+                if(percentCheck < 0 || percentCheck > 100.0 || sumCheck < 0)
+                    output.append("Wrong Input!");
+                else {
+                    DecimalFormat decimalFormat = new DecimalFormat("#.##");
+                    CreditModel creditModel = new CreditModel(sumCheck,
+                            Objects.requireNonNull(durationInput.getSelectedItem()).toString(),
+                            percentCheck,
+                            Objects.requireNonNull(typeInput.getSelectedItem()).toString());
+                    if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("дифференцированный")){
+                        int monthCount = 1;
+                        for (String month : creditModel.getArray()) {
+                            output.append(monthCount++ + "месяц: " + month + "\n");
+                        }
+                        double overpayment = creditModel.getResult() - Double.parseDouble(sumInput.getText());
+                        output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
+                        output.append("Общая выплата: " + decimalFormat.format(creditModel.getResult()));
+                    } else if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("аннуитетный")) {
+                        output.append("Ежемесячная плата месяц: " +
+                                decimalFormat.format(creditModel.getMonthPay()) + "\n");
+                        double overpayment = creditModel.getResult() - Double.parseDouble(sumInput.getText());
+                        output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
+                        output.append("Общая выплата: " + decimalFormat.format(creditModel.getResult()));
                     }
-                    double overpayment = creditModel.getResult() - Double.parseDouble(sumInput.getText());
-                    output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
-                    output.append("Общая выплата: " + decimalFormat.format(creditModel.getResult()));
-                } else if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("аннуитетный")) {
-                    output.append("Ежемесячная плата месяц: " +
-                            decimalFormat.format(creditModel.getMonthPay()) + "\n");
-                    double overpayment = creditModel.getResult() - Double.parseDouble(sumInput.getText());
-                    output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
-                    output.append("Общая выплата: " + decimalFormat.format(creditModel.getResult()));
                 }
-            }
             } catch (Exception ex) {
                 output.append("Wrong Input!");
             }
