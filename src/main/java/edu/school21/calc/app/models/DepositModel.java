@@ -1,4 +1,4 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.models;
 
 import java.util.Objects;
 
@@ -149,8 +149,8 @@ public class DepositModel {
 
         double profit = 0.0;
         double years = duration % 365 + 1;
-        if (replenishment == 0.0) {
-            if (capital == 0.0) { //++++
+        if (rep == 0.0) {
+            if (capital == 0.0) {
                 profit = (sum * percent * duration / 365) / 100;
                 finalTax = profit * (tax / 100);
                 finalSum = sum + profit - finalTax;
@@ -163,26 +163,27 @@ public class DepositModel {
                 finalTax = profit * (tax / 100);
             }
         } else {
-//            double period = years * replenishment;
-//            if (capital == 0.0) {///???
-//                finalSum = sum;
-//                for (double i = 0.0; i < period; i++) {
-//                    profit = ((sum + profit + rep) * percent * duration / 365) / 100;
-//                    finalSum += profit;
-//                }
-//                finalTax = profit * (tax / 100);
-//                finalSum -= finalTax;
-//                if (payment == 0.0) everyPayment = profit;
-//                else everyPayment = profit / (payment * years);
-//            } else {//---
-//                percent /= 100;
-//                for (double i = 0.0; i < period; i++) {
-//
-//                }
-//                finalSum = sum * Math.pow((1 + percent / 365), duration);
-//                profit = finalSum - sum;
-//                finalTax = profit * (tax / 100);
-//            }
+            double period = years * replenishment;
+            if (capital == 0.0) {
+                finalSum = sum;
+                for (double i = 0.0; i < period; i++) {
+                    profit = ((sum + profit + rep) * percent * duration / 365) / 100;
+                    finalSum += profit;
+                }
+                finalTax = profit * (tax / 100);
+                finalSum -= finalTax;
+                if (payment == 0.0) everyPayment = profit;
+                else everyPayment = profit / (payment * years);
+            } else {//---
+                percent /= 100;
+                for (double i = 0.0; i < period; i++) {
+                    sum += rep;
+                    profit = sum * Math.pow((1 + percent / 365), duration);
+                    finalSum += profit;
+                }
+                profit = finalSum - sum;
+                finalTax = profit * (tax / 100);
+            }
         }
         finalPercent = profit;
         }

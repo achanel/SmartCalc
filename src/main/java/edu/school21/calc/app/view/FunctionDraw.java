@@ -1,4 +1,6 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.view;
+
+import edu.school21.calc.app.models.FunctionModel;
 
 import javax.swing.*;
 import java.awt.*;

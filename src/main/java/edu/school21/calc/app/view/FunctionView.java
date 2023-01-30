@@ -1,8 +1,6 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.view;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class FunctionView extends JPanel {
     String f = "";

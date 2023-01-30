@@ -1,11 +1,11 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.models;
 
 import java.util.ArrayList;
 
 public class FunctionModel {
     ArrayList<String> post;
 
-    FunctionModel(String Func) {
+    public FunctionModel(String Func) {
         ArrayList<String> list = new ArrayList<String>();
         list.add("(");
 

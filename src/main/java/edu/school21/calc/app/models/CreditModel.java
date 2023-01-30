@@ -1,4 +1,4 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.models;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -123,6 +123,4 @@ public class CreditModel {
         result = monthPay * mpCount;
         decimalFormat.format(result);
     }
-
-
 }

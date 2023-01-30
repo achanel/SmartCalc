@@ -1,4 +1,8 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.program;
+
+import edu.school21.calc.app.models.CalcModel;
+import edu.school21.calc.app.view.CalcView;
+import edu.school21.calc.app.presenter.Presenter;
 
 import javax.swing.SwingUtilities;
 
@@ -9,11 +13,6 @@ public class Main {
         new Presenter(calcView, calcModel);
     }
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Main();
-            }
-        });
+        SwingUtilities.invokeLater(Main::new);
     }
 }

@@ -1,4 +1,6 @@
-package edu.school21.calc.app;
+package edu.school21.calc.app.view;
+
+import edu.school21.calc.app.presenter.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +12,6 @@ import java.awt.event.KeyEvent;
 public class CalcView extends JPanel{
     private Presenter presenter;
     private final JTextField output = new JTextField();
-    private final Font font = new Font("SanSerif", Font.BOLD, 20);
     private final JButton[] numbers = new JButton[10];
     private final JButton clear = new JButton("C");
     private final JButton backspace = new JButton("B");
@@ -43,7 +44,7 @@ public class CalcView extends JPanel{
     private final JButton deposit = new JButton("DEP");
     private final JButton credit = new JButton("CRED");
 
-    void addPresenter(final Presenter p){
+    public void addPresenter(final Presenter p){
         presenter = p;
     }
     public CalcView(){
@@ -132,7 +133,11 @@ public class CalcView extends JPanel{
                 output.setText(output.getText() + "-");
             } else if (b == equ) {
                 presenter.printHistory(output.getText(), 0);
-                presenter.keyPressed(output.getText());
+                try {
+                    presenter.keyPressed(output.getText());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             } else if (b == history) {
                 output.setText(presenter.history("print"));
             } else if (b == clearHistory) {
@@ -140,7 +145,12 @@ public class CalcView extends JPanel{
             } else if (b == functions) {
                 SwingUtilities.invokeLater(FunctionView::new);
             } else if (b == credit) {
-                SwingUtilities.invokeLater(CreditView::new);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.moreCalc(1);
+                    }
+                });
             } else if (b == deposit) {
                 SwingUtilities.invokeLater(DepositView::new);
             }
@@ -162,6 +172,7 @@ public class CalcView extends JPanel{
         pm.addActionListener(l);
         numbers[0] = new JButton("0");
         numbers[0].setBounds(130, 310, 50, 50 );
+        Font font = new Font("SanSerif", Font.BOLD, 20);
         numbers[0].setFont(font);
         add(numbers[0]);
         dot.setBounds(190, 310, 50, 50);
@@ -275,7 +286,7 @@ public class CalcView extends JPanel{
         output.setEditable(true);
         add(output);
     }
-    void printResult(Double result){
+    public void printResult(Double result){
         if (Double.toString(result).endsWith(".0")) {
             output.setText(Double.toString(result).replace(".0", ""));
             presenter.printHistory(Double.toString(result).replace(".0", ""), 1);
@@ -285,8 +296,8 @@ public class CalcView extends JPanel{
         }
     }
 
-    void printError(String err){
+    public void printError(){
 //        output.setForeground(Color.RED);
-        output.setText(err);
+        output.setText("ERROR!");
     }
 }

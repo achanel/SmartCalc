@@ -27,7 +27,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>edu.school21.calc.app.Main</mainClass>
+                            <mainClass>edu.school21.calc.app.program.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
