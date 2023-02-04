@@ -1,13 +1,20 @@
 package edu.school21.calc.app.view;
 
-import edu.school21.calc.app.models.DepositModel;
+import edu.school21.calc.app.presenter.Presenter;
 
 import javax.swing.*;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class DepositView extends JPanel{
+    private Presenter presenter;
+    JTextArea output;
+    JComboBox<String> paymentInput;
     final JFrame depositWindow = new JFrame("Deposit Calculator");
+
+    public void addPresenter(final Presenter p){
+        presenter = p;
+    }
 
     public DepositView() {
         depositWindow.setSize(330, 537);
@@ -47,7 +54,7 @@ public class DepositView extends JPanel{
         JComboBox<String> accrualInput = new JComboBox<>(accrualLine);
         String[] payLine = {"нет", "в конце срока", "ежедневно", "еженедельно", "раз в месяц",
                 "раз в 2 месяца", "раз в квартал", "раз в 4 месяца", "раз в полгода", "раз в год"};
-        JComboBox<String> paymentInput = new JComboBox<>(payLine);
+        paymentInput = new JComboBox<>(payLine);
         String[] repLine = {"не предусмотрено", "раз в месяц",
                 "раз в 2 месяца", "раз в квартал", "раз в 4 месяца", "раз в полгода", "раз в год"};
         JComboBox<String> replenishmentInput = new JComboBox<>(repLine);
@@ -124,7 +131,7 @@ public class DepositView extends JPanel{
         repSumInput.setEditable(false);
         add(repSumInput);
 
-        JTextArea output = new JTextArea("Результаты расчета:\n\n");
+        output = new JTextArea("Результаты расчета:\n\n");
         JScrollPane scrollPane = new JScrollPane(output,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setBounds(10, 360, 310, 150);
@@ -149,8 +156,7 @@ public class DepositView extends JPanel{
                         (taxCheck < 0 || taxCheck > 100) || sumCheck < 0 || durationCheck < 0)
                     output.append("Wrong Input!");
                 else {
-                    DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                    DepositModel depositModelModel = new DepositModel( sumCheck,
+                    presenter.doDeposit(this, sumCheck,
                             Objects.requireNonNull(durationField.getSelectedItem()).toString(),
                             durationCheck, percentCheck, taxCheck,
                             Objects.requireNonNull(accrualInput.getSelectedItem()).toString(),
@@ -158,22 +164,11 @@ public class DepositView extends JPanel{
                             Objects.requireNonNull(paymentInput.getSelectedItem()).toString(),
                             Objects.requireNonNull(replenishmentInput.getSelectedItem()).toString(),
                             repCheck);
-                    if (paymentInput.getSelectedItem().equals("нет")) {
-                        output.append("Начисленные проценты: " + decimalFormat.format(depositModelModel.getFinalPercent()) +
-                                "\nCумма налога: " + decimalFormat.format(depositModelModel.getFinalTax()) +
-                                "\nCумма на вкладе к концу срока :" + decimalFormat.format(depositModelModel.getFinalSum()));
-                    } else {
-                        output.append("Начисленные проценты: " + decimalFormat.format(depositModelModel.getFinalPercent()) +
-                                "\nCумма налога: " + decimalFormat.format(depositModelModel.getFinalTax()) +
-                                "\nCумма на вкладе к концу срока :" + decimalFormat.format(depositModelModel.getFinalSum()) +
-                                "\nКаждая выплата: " + decimalFormat.format(depositModelModel.getEveryPayment()));
-                    }
                 }
             } catch (Exception ex){
                 output.append("Wrong Input!");
             }
         });
-
         accrualInput.addActionListener(e -> {
             if(Objects.equals(accrualInput.getSelectedItem(), "Добавлять ко вкладу")){
                 paymentInput.setSelectedIndex(0);
@@ -185,7 +180,6 @@ public class DepositView extends JPanel{
                 paymentInput.setEnabled(true);
             }
         });
-
         replenishmentInput.addActionListener(e -> {
             repSumInput.setEditable(!Objects.equals(replenishmentInput.getSelectedItem(), "не предусмотрено"));
         });
@@ -199,5 +193,19 @@ public class DepositView extends JPanel{
         });
 
         clear.addActionListener(e-> output.setText("Результаты расчета:\n\n"));
+    }
+
+    public void printDeposit(double sum, double percent, double tax, double payment){
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        if (paymentInput.getSelectedItem().equals("нет")) {
+            output.append("Начисленные проценты: " + decimalFormat.format(percent) +
+                    "\nCумма налога: " + decimalFormat.format(tax) +
+                    "\nCумма на вкладе к концу срока :" + decimalFormat.format(sum));
+        } else {
+            output.append("Начисленные проценты: " + decimalFormat.format(percent) +
+                    "\nCумма налога: " + decimalFormat.format(tax) +
+                    "\nCумма на вкладе к концу срока :" + decimalFormat.format(sum) +
+                    "\nКаждая выплата: " + decimalFormat.format(payment));
+        }
     }
 }

@@ -143,16 +143,29 @@ public class CalcView extends JPanel{
             } else if (b == clearHistory) {
                 presenter.history("clear");
             } else if (b == functions) {
-                SwingUtilities.invokeLater(FunctionView::new);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        FunctionView functionView = new FunctionView();
+                        functionView.addPresenter(presenter);
+                    }
+                });
             } else if (b == credit) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        presenter.moreCalc(1);
+                        CreditView creditView = new CreditView();
+                        creditView.addPresenter(presenter);
                     }
                 });
             } else if (b == deposit) {
-                SwingUtilities.invokeLater(DepositView::new);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        DepositView depositView = new DepositView();
+                        depositView.addPresenter(presenter);
+                    }
+                });
             }
         };
             addKeyListener(new KeyAdapter() {

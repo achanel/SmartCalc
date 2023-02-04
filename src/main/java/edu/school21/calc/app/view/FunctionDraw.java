@@ -1,6 +1,7 @@
 package edu.school21.calc.app.view;
 
 import edu.school21.calc.app.models.FunctionModel;
+import edu.school21.calc.app.presenter.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
 public class FunctionDraw extends JPanel{
+    private Presenter presenter;
     double[] X;
     double x1, x2, y1, y2, step_x, step_y;
     int WIDTH;
@@ -19,9 +21,9 @@ public class FunctionDraw extends JPanel{
     int lastX;
     int lastY;
 
-    FunctionModel f;
-
-
+    public void addPresenter(final Presenter p){
+        presenter = p;
+    }
     public FunctionDraw(double x1, double x2, double y1, double y2, String s) {
         this.x1 = x1;
         this.x2 = x2;
@@ -36,8 +38,6 @@ public class FunctionDraw extends JPanel{
 
         lastX = 0;
         lastY = 0;
-
-        f = new FunctionModel(s);
 
         frameOp();
     }
@@ -218,10 +218,10 @@ public class FunctionDraw extends JPanel{
 
     public void paintF(Graphics g) {
 
-        int q1 = HEIGHT - (int) Math.floor((HEIGHT / (Math.abs(y2 - y1))) * (f.alg(x1) - y1));
+        int q1 = HEIGHT - (int) Math.floor((HEIGHT / (Math.abs(y2 - y1))) * (presenter.doAlg(x1) - y1));
 
         for (int i = 1; i < WIDTH; i++) {
-            double i2 = f.alg(x1 + ((Math.abs(x2 - x1)) / WIDTH) * i);
+            double i2 = presenter.doAlg(x1 + ((Math.abs(x2 - x1)) / WIDTH) * i);
             int q2 = HEIGHT - (int) Math.floor((HEIGHT / (Math.abs(y2 - y1))) * (i2 - y1));
 
             g.drawLine(i - 1, q1, i, q2);

@@ -14,7 +14,7 @@ public class CreditView extends JPanel {
     private Presenter presenter;
     final JFrame creditWindow = new JFrame("Credit Calculator");
 
-    public void addPresenter(final Presenter p){
+    public void addPresenter(Presenter p){
         presenter = p;
     }
 
@@ -91,7 +91,7 @@ public class CreditView extends JPanel {
                 if(percentCheck < 0 || percentCheck > 100.0 || sumCheck < 0)
                     output.append("Wrong Input!");
                 else {
-                    presenter.doCredit(sumCheck,
+                    presenter.doCredit(this, sumCheck,
                             Objects.requireNonNull(durationInput.getSelectedItem()).toString(),
                             percentCheck,
                             Objects.requireNonNull(typeInput.getSelectedItem()).toString());

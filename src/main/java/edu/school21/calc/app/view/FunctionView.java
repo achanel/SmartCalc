@@ -1,8 +1,11 @@
 package edu.school21.calc.app.view;
 
+import edu.school21.calc.app.presenter.Presenter;
+
 import javax.swing.*;
 
 public class FunctionView extends JPanel {
+    private Presenter presenter;
     String f = "";
     double x1;
     double x2;
@@ -10,6 +13,10 @@ public class FunctionView extends JPanel {
     double y2;
     final JFrame functionsWindow = new JFrame("Functions");
     final JLabel error = new JLabel("");
+
+    public void addPresenter(final Presenter p){
+        presenter = p;
+    }
     public FunctionView() {
         functionsWindow.setSize(320, 257);
         functionsWindow.add(this);
@@ -91,7 +98,7 @@ public class FunctionView extends JPanel {
                                 set("");
                                 set("Good");
                                 try {
-                                    FunctionDraw p = new FunctionDraw(x1, x2, y1, y2, f);
+                                    presenter.doFunctions(x1, x2, y1, y2, f);
                                 } catch (Exception w3) {
                                     set("Draw error");
                                     System.out.println(w3);
