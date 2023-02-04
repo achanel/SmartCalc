@@ -8,7 +8,6 @@ import edu.school21.calc.app.view.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Objects;
 
 public class Presenter implements ViewListener {
     private FunctionModel functionModel;
