@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 public class Main {
     public Main(){
         final CalcView calcView = new CalcView();
-        final CalcModel calcModel = new CalcModel();
+        final CalcModel calcModel = new CalcModel(0, "", (short) 0);
         new Presenter(calcView, calcModel);
     }
     public static void main(String[] args) {

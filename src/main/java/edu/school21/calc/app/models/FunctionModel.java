@@ -6,7 +6,7 @@ public class FunctionModel {
     ArrayList<String> post;
 
     public FunctionModel(String Func) {
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         list.add("(");
 
         String[] ar = new String[1];
@@ -86,8 +86,8 @@ public class FunctionModel {
             }
         }
 
-        post = new ArrayList<String>();
-        ArrayList<String> steck = new ArrayList<String>();
+        post = new ArrayList<>();
+        ArrayList<String> steck = new ArrayList<>();
         steck.add("");
         list.add(")");
         list.add("?");
@@ -146,71 +146,68 @@ public class FunctionModel {
     }
 
     public Double alg(double x) {
-        ArrayList<Double> steck = new ArrayList<Double>();
+        ArrayList<Double> stack = new ArrayList<>();
 
-        for (int i = 0; i < post.size(); i++) {
-            if (post.get(i).equals("+")) {
-                double n = steck.get(steck.size() - 1) + steck.get(steck.size() - 2);
-                steck.remove(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("-")) {
-                double n = steck.get(steck.size() - 2) - steck.get(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("*")) {
-                double n = steck.get(steck.size() - 2) * steck.get(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("/")) {
-                double n = steck.get(steck.size() - 2) / steck.get(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("^")) {
-                double n = Math.pow(steck.get(steck.size() - 2), steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("x") | post.get(i).equals("X")) {
-                steck.add(x);
-            } else if (post.get(i).equals("sin")) {
-                double n = Math.sin(steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("cos")) {
-                double n = Math.cos(steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("tg")) {
-                double n = Math.tan(steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("ctg")) {
-                double n = Math.cos(steck.get(steck.size() - 1)) / Math.sin(steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("ln")) {
-                double n = Math.log(steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("lg")) {
-                double n = Math.log10(steck.get(steck.size() - 1));
-                steck.remove(steck.size() - 1);
-                steck.add(n);
-            } else if (post.get(i).equals("Pi") | post.get(i).equals("pi")) {
-                steck.add(Math.PI);
-            } else if (post.get(i).equals("e") | post.get(i).equals("E")) {
-                steck.add(Math.E);
+        for (String s : post) {
+            if (s.equals("+")) {
+                double n = stack.get(stack.size() - 1) + stack.get(stack.size() - 2);
+                stack.remove(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("-")) {
+                double n = stack.get(stack.size() - 2) - stack.get(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("*")) {
+                double n = stack.get(stack.size() - 2) * stack.get(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("/")) {
+                double n = stack.get(stack.size() - 2) / stack.get(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("^")) {
+                double n = Math.pow(stack.get(stack.size() - 2), stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("x") | s.equals("X")) {
+                stack.add(x);
+            } else if (s.equals("sin")) {
+                double n = Math.sin(stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("cos")) {
+                double n = Math.cos(stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("tg")) {
+                double n = Math.tan(stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("ctg")) {
+                double n = Math.cos(stack.get(stack.size() - 1)) / Math.sin(stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("ln")) {
+                double n = Math.log(stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("lg")) {
+                double n = Math.log10(stack.get(stack.size() - 1));
+                stack.remove(stack.size() - 1);
+                stack.add(n);
+            } else if (s.equals("Pi") | s.equals("pi")) {
+                stack.add(Math.PI);
+            } else if (s.equals("e") | s.equals("E")) {
+                stack.add(Math.E);
             } else {
-                steck.add(Double.parseDouble(post.get(i)));
+                stack.add(Double.parseDouble(s));
             }
-
-
         }
-        double y = steck.get(0);
-        return y;
+        return stack.get(0);
     }
 }

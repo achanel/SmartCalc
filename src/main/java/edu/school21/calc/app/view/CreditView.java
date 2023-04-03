@@ -103,20 +103,19 @@ public class CreditView extends JPanel {
         clear.addActionListener(e-> output.setText("Результаты расчета:\n\n"));
     }
 
-    public void printCredit(List<String> array, Double result, Double monthPay){
+    public void printCredit(List<String> array, Double result,
+                            Double monthPay, Double overpayment){
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("дифференцированный")){
             int monthCount = 1;
             for (String month : array) {
                 output.append(monthCount++ + "месяц: " + month + "\n");
             }
-            double overpayment = result - Double.parseDouble(sumInput.getText());
             output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
             output.append("Общая выплата: " + decimalFormat.format(result));
         } else if (Objects.requireNonNull(typeInput.getSelectedItem()).toString().equals("аннуитетный")) {
             output.append("Ежемесячная плата: " +
                     decimalFormat.format(monthPay) + "\n");
-            double overpayment = result - Double.parseDouble(sumInput.getText());
             output.append("\nПереплата: " + decimalFormat.format(overpayment) + "\n\n");
             output.append("Общая выплата: " + decimalFormat.format(result));
         }

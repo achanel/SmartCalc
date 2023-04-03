@@ -38,11 +38,12 @@ public class CalcView extends JPanel{
 
     private final JButton ln = new JButton("ln");
     private final JButton log = new JButton("log");
-    private final JButton sqrt = new JButton("\u221A");
+    private final JButton sqrt = new JButton("√");
     private final JButton pow = new JButton("x^y");
 
     private final JButton deposit = new JButton("DEP");
     private final JButton credit = new JButton("CRED");
+    private final JButton readme = new JButton("?");
 
     public void addPresenter(final Presenter p){
         presenter = p;
@@ -128,7 +129,7 @@ public class CalcView extends JPanel{
             } else if (b == pow) {
                 output.setText(output.getText() + "^");
             } else if (b == mod) {
-                output.setText(output.getText() + "%");
+                output.setText(output.getText() + "mod");
             } else if (b == pm) {
                 output.setText(output.getText() + "-");
             } else if (b == equ) {
@@ -143,42 +144,36 @@ public class CalcView extends JPanel{
             } else if (b == clearHistory) {
                 presenter.history("clear");
             } else if (b == functions) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        FunctionView functionView = new FunctionView();
-                        functionView.addPresenter(presenter);
-                    }
+                SwingUtilities.invokeLater(() -> {
+                    FunctionView functionView = new FunctionView();
+                    functionView.addPresenter(presenter);
                 });
             } else if (b == credit) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        CreditView creditView = new CreditView();
-                        creditView.addPresenter(presenter);
-                    }
+                SwingUtilities.invokeLater(() -> {
+                    CreditView creditView = new CreditView();
+                    creditView.addPresenter(presenter);
                 });
             } else if (b == deposit) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        DepositView depositView = new DepositView();
-                        depositView.addPresenter(presenter);
-                    }
+                SwingUtilities.invokeLater(() -> {
+                    DepositView depositView = new DepositView();
+                    depositView.addPresenter(presenter);
+                });
+            } else if (b == readme) {
+                SwingUtilities.invokeLater(() -> {
+                        ReadmeView readmeView = new ReadmeView();
                 });
             }
         };
-            addKeyListener(new KeyAdapter() {
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    char symbol = e.getKeyChar();
-
-                    if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.' || symbol == 'E')
-                        output.setText(output.getText() + symbol);
-                    else
-                        return;
-                }
-            });
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                char symbol = e.getKeyChar();
+                if (Character.isDigit(symbol) || symbol == '(' || symbol == ')' || symbol == '.' || symbol == 'E')
+                    output.setText(output.getText() + symbol);
+                else
+                    return;
+            }
+        });
 
         pm.setBounds(70, 310, 50, 50);
         add(pm);
@@ -282,6 +277,9 @@ public class CalcView extends JPanel{
         functions.setFont(font);
         add(functions);
         functions.addActionListener(l);
+        readme.setBounds(350, 15, 15, 15);
+        add(readme);
+        readme.addActionListener(l);
 
         for(int x = 0; x < 3; x++ )
             for(int y = 0; y < 3; y++){
@@ -294,7 +292,7 @@ public class CalcView extends JPanel{
         for(JButton b : numbers)
             b.addActionListener(l);
 
-        output.setBounds(10, 10, 350, 50);
+        output.setBounds(10, 10, 340, 50);
         output.setFont(font);
         output.setEditable(true);
         add(output);
@@ -309,8 +307,8 @@ public class CalcView extends JPanel{
         }
     }
 
-    public void printError(){
-//        output.setForeground(Color.RED);
-        output.setText("ERROR!");
-    }
+//    public void printError(){
+////        output.setForeground(Color.RED);
+//        output.setText("ERROR!");
+//    }
 }

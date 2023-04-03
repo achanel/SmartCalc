@@ -16,6 +16,12 @@ public class CreditModel {
     DecimalFormat decimalFormat = new DecimalFormat("#.##");
     private Double monthPay = 0.0;
 
+    public Double getOverpayment() {
+        return overpayment;
+    }
+
+    private Double overpayment = 0.0;
+
     public List<String> getArray() {
         return array;
     }
@@ -28,9 +34,11 @@ public class CreditModel {
         return monthPay;
     }
 
-    public CreditModel(Double sum, String durationIn, Double percent, String type) {
+    public CreditModel(Double sum, String durationIn, Double percent, String type) throws Exception {
         this.sum = sum;
         this.percent = percent;
+        if (percent <= 0)
+            throw new Exception("Wrong input");
         this.duration = 0.0;
 
         switch (durationIn){
@@ -93,7 +101,7 @@ public class CreditModel {
             defCalc();
     }
 
-    private void defCalc(){
+    public void defCalc(){
         double mpCount = duration;
         double rest = sum;
         double mpReal = sum / mpCount;
@@ -112,9 +120,10 @@ public class CreditModel {
             }
         }
         decimalFormat.format(result);
+        overpayment = result - sum;
     }
 
-    private void annCalc() {
+    public void annCalc() {
         double mpCount = duration;
         double r = (duration / 12) / 1200;
         double ak = (r * Math.pow((1 + r), mpCount) / (Math.pow((1 + r), mpCount) - 1));
@@ -122,5 +131,6 @@ public class CreditModel {
         decimalFormat.format(monthPay);
         result = monthPay * mpCount;
         decimalFormat.format(result);
+        overpayment = result - sum;
     }
 }

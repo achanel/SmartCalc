@@ -6,8 +6,12 @@ import edu.school21.calc.app.models.DepositModel;
 import edu.school21.calc.app.models.FunctionModel;
 import edu.school21.calc.app.view.*;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Presenter implements ViewListener {
     private FunctionModel functionModel;
@@ -20,10 +24,13 @@ public class Presenter implements ViewListener {
         calcView.addPresenter(this);
     }
     @Override
-    public void keyPressed(String str) throws Exception {
-        calcModel.setIn(str);
-        double answer = calcModel.doCalculation();
-        calcView.printResult(answer);
+    public void keyPressed(String str) {
+        try {
+            double answer = calcModel.doCalculation(str);
+            calcView.printResult(answer);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -38,17 +45,51 @@ public class Presenter implements ViewListener {
             } else return;
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
-            calcView.printError();
+//            calcView.printError();
         }
     }
     @Override
     public String history(String history) {
         if (history.equals("print"))
-            return (calcModel.readHistory());
+            return (readHistory());
         else if (history.equals("clear")) {
-            return (calcModel.clearHistory());
+            return (clearHistory());
         }
         return null;
+    }
+
+    @Override
+    public String readHistory() {
+        int skipLine = 0;
+        List<String> stringList = new LinkedList<>();
+        try {
+            Scanner sc = new Scanner(new File("target/calcHistory.txt"));
+            String strFromFile;
+            while(sc.hasNextLine()){
+                skipLine++;
+                strFromFile = sc.nextLine();
+                stringList.add(strFromFile);
+            }
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        for (int i = skipLine; i > 1; i--){
+            stringList = stringList.subList(1,stringList.size());
+        }
+        System.out.println(stringList);
+        return stringList.toString();
+    }
+
+    @Override
+    public String clearHistory() {
+        String ret = "success";
+        try {
+            Files.delete(Paths.get("target/calcHistory.txt"));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            ret = "fail";
+        }
+        return ret;
     }
 
     @Override
@@ -63,10 +104,10 @@ public class Presenter implements ViewListener {
         return (functionModel.alg(x));
     }
     @Override
-    public void doCredit(CreditView creditView, double sum, String duration, double percent, String type){
+    public void doCredit(CreditView creditView, double sum, String duration, double percent, String type) throws Exception {
         CreditModel creditModel = new CreditModel(sum, duration, percent, type);
         creditView.printCredit(creditModel.getArray(),
-                creditModel.getResult(), creditModel.getMonthPay());
+                creditModel.getResult(), creditModel.getMonthPay(), creditModel.getOverpayment());
     }
     @Override
     public void doDeposit(DepositView depositView, double sum, String durationS, double durationD,

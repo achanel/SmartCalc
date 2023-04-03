@@ -1,160 +1,326 @@
 package edu.school21.calc.app.models;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-
-import static java.nio.file.Files.delete;
+import java.util.Stack;
+import java.util.Objects;
 
 public class CalcModel {
-    public void setIn(String in) {
-        this.in = in;
+    short NUMBER = 0;
+    short PLUS_MINUS = 1;
+    short MUL_DIV_MOD = 2;
+    short POWER = 3;
+    short MATH_OPERATOR = 4;
+    short BRACKETS = 5;
+
+    private final short priority;
+    private final String operator;
+    private final double value;
+
+    public CalcModel(double value, String operator, short priority) {
+        this.value = value;
+        this.operator = operator;
+        this.priority = priority;
     }
 
-    private String in;
-    private int ch;
-    private int pos = -1;
-
-
-    public double doCalculation() throws Exception {
-        nextChar();
-        double x = parseExpression();
-        return x;
-    }
-    private void nextChar() {
-        ch = (++pos < in.length()) ? in.charAt(pos) : -1;
-    }
-    private boolean eat(int charToEat) {
-        while (ch == ' ') nextChar();
-        if (ch == charToEat) {
-            nextChar();
-            return true;
-        }
-        return false;
+    public short getPriority() {
+        return priority;
     }
 
-    double parse() throws Exception {
-        nextChar();
-        double x = parseExpression();
-        if (pos < in.length()) throw new RuntimeException("Unexpected: " + (char)ch);
-        return x;
-    }
-    private double parseExpression() throws Exception {
-        double x = parseTerm();
-        for (;;) {
-            if      (eat('+')) x += parseTerm(); // addition
-            else if (eat('-')) x -= parseTerm(); // subtraction
-            else return x;
-        }
+    public String getOperator() {
+        return operator;
     }
 
-    private double parseTerm() throws Exception {
-        double x = parseFactor();
-        for (;;) {
-            if      (eat('*')) x *= parseFactor();
-            else if (eat('/')) {
-                double parseF = parseFactor();
-                if (parseF == 0.0) {
-                    throw new Exception("Division by zero");
-                } else {
-                    x /= parseF;
-                }
-            }
-            else if (eat('%')) {
-                double parseF = parseFactor();
-                if (parseF == 0.0) {
-                    throw new Exception("Division by zero");
-                }
-                x %= parseF;
-            }
-            else if (eat('E')) x = x * java.lang.Math.pow(10, parseFactor());
-            else if (eat('^')) x = java.lang.Math.pow(x, parseFactor());
-            else return x;
+    public double doCalculation(String in){
+        Stack<CalcModel> stack = new Stack<>();
+        replace(in);
+        if(!validation(in)) /*проверить!!! ошибка на (i - 1)*/
+            throw new RuntimeException();
+        mainParser(in, stack);
+        stack = polishNotation(stack);
+        return(calculateExpression(stack));
+    }
+
+    void operatorParser(char symbol, Stack<CalcModel> stack) {
+        if (symbol == '+') {
+            CalcModel lexeme = new CalcModel(0, "+", PLUS_MINUS);
+            stack.add(lexeme);
+        } else if (symbol == '-') {
+            CalcModel lexeme = new CalcModel(0, "-", PLUS_MINUS);
+            stack.add(lexeme);
+        } else if (symbol == '*') {
+            CalcModel lexeme = new CalcModel(0, "*", MUL_DIV_MOD);
+            stack.add(lexeme);
+        } else if (symbol == '/') {
+            CalcModel lexeme = new CalcModel(0, "/", MUL_DIV_MOD);
+            stack.add(lexeme);
+        } else if (symbol == 'm') {
+            CalcModel lexeme = new CalcModel(0, "mod", MUL_DIV_MOD);
+            stack.add(lexeme);
+        } else if (symbol == '^') {
+            CalcModel lexeme = new CalcModel(0, "^", POWER);
+            stack.add(lexeme);
         }
     }
-    double parseFactor() throws Exception {
-        if (eat('+')) return +parseFactor(); // unary plus
-        if (eat('-')) return -parseFactor(); // unary minus
 
-        double x;
-        int startPos = this.pos;
-        if (eat('(')) { // parentheses
-            x = parseExpression();
-            if (!eat(')')) throw new RuntimeException("Missing ')'");
-        } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
-            while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
-            x = Double.parseDouble(in.substring(startPos, this.pos));
-        } else if (ch >= 'a' && ch <= 'z') { // functions
-            while (ch >= 'a' && ch <= 'z') nextChar();
-            String func = in.substring(startPos, this.pos);
-            if (eat('(')) {
-                x = parseExpression();
-                if (!eat(')')) throw new RuntimeException("Missing ')' after argument to " + func);
-            } else {
-                x = parseFactor();
+    void mathFuncParser(char i, char next, Stack<CalcModel> stack) {
+        if (i == 's') {
+            if (next == 'i') {
+                CalcModel lexeme = new CalcModel(0, "sin", MATH_OPERATOR);
+                stack.add(lexeme);
+            } else if (next == 'q') {
+                CalcModel lexeme = new CalcModel(0, "sqrt", MATH_OPERATOR);
+                stack.add(lexeme);
             }
-            switch (func) {
-                case "sqrt":
-                    x = Math.sqrt(x);
-                    break;
-                    case "sin":
-                        x = Math.sin(Math.toRadians(x));
+        } else if (i == 'a') {
+            if (next == 's') {
+                CalcModel lexeme = new CalcModel(0, "asin", MATH_OPERATOR);
+                stack.add(lexeme);
+            } else if (next == 'c') {
+                CalcModel lexeme = new CalcModel(0, "acos", MATH_OPERATOR);
+                stack.add(lexeme);
+            } else if (next == 't') {
+                CalcModel lexeme = new CalcModel(0, "atan", MATH_OPERATOR);
+                stack.add(lexeme);
+            }
+        } else if (i == 'l') {
+            if (next == 'o') {
+                CalcModel lexeme = new CalcModel(0, "log", MATH_OPERATOR);
+                stack.add(lexeme);
+            } else if (next == 'n') {
+                CalcModel lexeme = new CalcModel(0, "ln", MATH_OPERATOR);
+                stack.add(lexeme);
+            }
+        } else if (i == 't') {
+            CalcModel lexeme = new CalcModel(0, "tan", MATH_OPERATOR);
+            stack.add(lexeme);
+        } else if (i == 'c') {
+            CalcModel lexeme = new CalcModel(0, "cos", MATH_OPERATOR);
+            stack.add(lexeme);
+        }
+    }
+    
+    private void mainParser(String in, Stack<CalcModel> stack) {
+        for (int i = 0; i < in.length(); i++) {
+            if (Character.isDigit(in.charAt(i)) || in.charAt(i) == '.') {
+                StringBuilder num = new StringBuilder();
+                while (Character.isDigit(in.charAt(i)) || in.charAt(i) == '.'){
+                    num.append(in.charAt(i));
+                    i++;
+                    if (i == in.length())
                         break;
-                        case "cos":
-                            x = Math.cos(Math.toRadians(x));
-                            break;
-                        case "tan":
-                            x = Math.tan(Math.toRadians(x));
-                            break;
-                        case "asin":
-                            x = Math.asin(Math.toRadians(x));
-                            break;
-                        case "acos":
-                            x = Math.acos(Math.toRadians(x));
-                            break;
-                        case "atan":
-                            x = Math.atan(x);
-                            break;
-                        case "ln":
-                            x = Math.log(x);
-                            break;
-                        case "log":
-                            x = Math.log10(x);
-                            break;
-                        default:
-                            throw new RuntimeException("Unknown function: " + func);
-                    }
-                } else {
-                    throw new RuntimeException("Unexpected: " + (char)ch);
                 }
-
-                if (eat('^')) x = Math.pow(x, parseFactor()); // exponentiation
-
-                return x;
-    }
-    public String readHistory() {
-                StringBuilder history = new StringBuilder();
-                try (FileInputStream fileInputStream = new FileInputStream("target/calcHistory.txt")){
-                    int i;
-                    while ((i=fileInputStream.read())!= -1) {
-                        if (i == 61)
-                            break;
-                        history.append(Character.toString((char) i));
-                    }
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-                return history.toString();
-    }
-
-    public String clearHistory() {
-        String ret = "success";
-        try {
-            delete(Paths.get("target/calcHistory.txt"));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            ret = "fail";
+                i--;
+                CalcModel num_lex = new CalcModel(Double.parseDouble(num.toString()), "", NUMBER);
+                stack.add(num_lex);
+            }
+            if (isOperator(in.charAt(i))) {
+                operatorParser(in.charAt(i), stack);
+            } else if (isFunction(in.charAt(i))) {
+                mathFuncParser(in.charAt(i), in.charAt(i + 1), stack);
+                if (in.charAt(i) == 'a' && in.charAt(i + 1) != 'n') i += 3;
+                if (in.charAt(i + 1) == 'q') i += 3;
+            } else if (in.charAt(i) == '(') {
+                CalcModel lexeme = new CalcModel(0, "(", BRACKETS);
+                stack.add(lexeme);
+            } else if (in.charAt(i) == ')') {
+                CalcModel lexeme = new CalcModel(0, ")", BRACKETS);
+                stack.add(lexeme);
+            }
         }
-        return ret;
+    }
+
+    boolean validation(String str){
+//        return validationBrackets(str) && operatorAndDigitsValidation(str);
+        return validationBrackets(str);
+    }
+
+    private boolean validationBrackets(String str) {
+        boolean result = false;
+        boolean emptyBody = false;
+        short bracketsCheck = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '(') {
+                bracketsCheck++;
+                if (str.charAt(i + 1) == ')') emptyBody = true;
+            } else if (str.charAt(i) == ')') {
+                bracketsCheck--;
+                if (bracketsCheck < 0) result = false;
+            }
+        }
+        if (bracketsCheck == 0 && !emptyBody) result = true;
+        return result;
+    }
+
+//    private boolean operatorAndDigitsValidation(String str) {
+//        boolean result = true;
+//        for (int i = 0; i < str.length(); i++) {
+//            if (str.charAt(i) == '.' && (!Character.isDigit(str.charAt(i + 1)) || !Character.isDigit(str.charAt(i - 1)))) {
+//                result = false;
+//            } else if (isOperator(str.charAt(i))) {
+//                if (str.charAt(i) == '%' && isOperator(str.charAt(i - 1))) {
+//                    result = false;
+//                } else if (str.charAt(i) == '+' || str.charAt(i) == '-') {
+//                    if (isOperator(str.charAt(i + 1)) || isOperator(str.charAt(i - 1)))
+//                        result = false;
+//                    else if (str.charAt(i + 1) == ')')
+//                        result = false;
+//                } else if (str.charAt(i) == '*' || str.charAt(i) == '/' || str.charAt(i) == '^') {
+//                    if (isOperator(str.charAt(i + 1)) || isOperator(str.charAt(i - 1)))
+//                        result = false;
+//                    else if (str.charAt(i + 1) == ')' || str.charAt(i - 1) == '(')
+//                        result = false;
+//                } else if (isFunction(str.charAt(i))) {
+//                    if (!isOperator(str.charAt(i - 1))) result = false;
+//                } else if (str.charAt(i) == 'm' && !Character.isDigit(str.charAt(i - 1))) {
+//                    result = false;
+//                }
+//            } else if (isFunction(str.charAt(i)) && str.charAt(i - 1) == ')') {
+//                result = false;
+//            } else if (str.charAt(i) == '(' || str.charAt(i) == ')') {
+//                if (i != 0 && str.charAt(i) != str.charAt(str.length() - 1)) {
+//                    if (!isOperator(str.charAt(i - 1)) && str.charAt(i) == '(' && str.charAt(i - 1) != '(' &&
+//                            (!isFunction(str.charAt(i - 3)) && !isFunction(str.charAt(i - 2)) &&
+//                    !isFunction(str.charAt(i - 4)))) {
+//                        result = false;
+//                    } else if (!isOperator(str.charAt(i + 1)) && str.charAt(i) == ')' && str.charAt(i + 1) != ')') {
+//                        result = false;
+//                    }
+//                }
+//            }
+//        }
+//        return result;
+//    }
+
+    boolean isOperator(char symbol) {
+        return symbol == '^' || symbol == '*' || symbol == '+' || symbol == '-' ||
+                symbol == '/' || symbol == 'm';
+    }
+
+    boolean isFunction(char symbol) {
+        return symbol == 's' || symbol == 'c' || symbol == 't' || symbol == 'a' ||
+                symbol == 'l';
+    }
+
+    void replace(String str){
+        str = str.replace("e+", "*10^");
+        str = str.replace("e-", "*10^");
+        str = str.replace("(+", "(0+");
+        str = str.replace("(-", "(0-");
+    }
+
+    Stack<CalcModel> polishNotation(Stack<CalcModel> stack) {
+        Stack<CalcModel> ready = new Stack<>();
+        Stack<CalcModel> support = new Stack<>();
+        for (CalcModel i : stack) {
+            if (i.getPriority() == NUMBER) {
+                ready.add(i);
+            } else {
+                if (Objects.equals(i.getOperator(), "(") &&
+                        i.getPriority() ==
+                                BRACKETS) {  // Если скобка открылась, то пушим ее в саппорт
+                    support.add(i);
+                } else {
+                    // Если скобка закрылась, начинаем доставать из саппорта все, пока не
+                    // встретим открытую скобку
+                    if (Objects.equals(i.getOperator(), ")")) {
+                        while (!support.isEmpty() && !Objects.equals(support.get(support.size() - 1).getOperator(), "(")) {
+                            CalcModel elem = support.get(support.size() - 1);
+                            support.remove(support.size() - 1);
+                            ready.add(elem);
+                        }
+                        if (!support.isEmpty()) support.remove(support.size() - 1);
+                    } else if (!support.isEmpty() &&
+                            i.getPriority() <= support.get(support.size() - 1).getPriority()) {
+                        while (!support.isEmpty() &&
+                                i.getPriority() <= support.get(support.size() - 1).getPriority()) {
+                            if (Objects.equals(support.get(support.size() - 1).getOperator(), "(")) break;
+                            CalcModel elem = support.get(support.size() - 1);
+                            support.remove(support.size() - 1);
+                            ready.add(elem);
+                        }
+                        support.add(i);
+                    } else {
+                        support.add(i);
+                    }
+                }
+            }
+        }
+        while (!support.isEmpty()) {
+            CalcModel elem = support.get(support.size() - 1);
+            support.remove(support.size() - 1);
+            ready.add(elem);
+        }
+        return ready;
+    }
+
+    double calculateExpression(Stack<CalcModel> stack) {
+        Stack<Double> tmp_list = new Stack<>();
+        for (CalcModel i : stack) {
+            if (i.priority == NUMBER) {
+                tmp_list.add(i.value);
+            } else if (isOperator(i.operator.charAt(0))) {
+                calculateIsOperators(tmp_list, i.operator);
+            } else if (isFunction(i.operator.charAt(0))) {
+                calculateIsMathFunction(tmp_list, i.operator);
+            }
+        }
+        double result = tmp_list.get(tmp_list.size() - 1);
+        tmp_list.remove(tmp_list.size() - 1);
+        return result;
+    }
+
+    void calculateIsOperators(Stack<Double> tmp_stack, String operator) {
+        double tmp_num, result;
+        tmp_num = tmp_stack.get(tmp_stack.size() - 1);
+        tmp_stack.remove(tmp_stack.size() - 1);
+        if (Objects.equals(operator, "+")) {
+            result = tmp_stack.get(tmp_stack.size() - 1) + tmp_num;
+            tmp_stack.remove(tmp_stack.size() - 1);
+            tmp_stack.add(result);
+        } else if (Objects.equals(operator, "-")) {
+            result = tmp_stack.get(tmp_stack.size() - 1) - tmp_num;
+            tmp_stack.remove(tmp_stack.size() - 1);
+            tmp_stack.add(result);
+        } else if (Objects.equals(operator, "*")) {
+            result = tmp_stack.get(tmp_stack.size() - 1) * tmp_num;
+            tmp_stack.remove(tmp_stack.size() - 1);
+            tmp_stack.add(result);
+        } else if (Objects.equals(operator, "/")) {
+            result = tmp_stack.get(tmp_stack.size() - 1) / tmp_num;
+            tmp_stack.remove(tmp_stack.size() - 1);
+            tmp_stack.add(result);
+        } else if (Objects.equals(operator, "mod")) {
+            result = tmp_stack.get(tmp_stack.size() - 1);
+            tmp_stack.remove(tmp_stack.size() - 1);
+            tmp_stack.add((double) Math.floorMod((int) result, (int) tmp_num));
+        } else if (Objects.equals(operator, "^")) {
+            result = tmp_stack.get(tmp_stack.size() - 1);
+            tmp_stack.remove(tmp_stack.size() - 1);
+            tmp_stack.add(Math.pow(result, tmp_num));
+        }
+    }
+
+    void calculateIsMathFunction(Stack<Double> tmp_stack, String operator) {
+        double result;
+        result = tmp_stack.get(tmp_stack.size() - 1);
+        tmp_stack.remove(tmp_stack.size() - 1);
+        if (Objects.equals(operator, "sin")) {
+            tmp_stack.add(Math.sin(result));
+        } else if (Objects.equals(operator, "cos")) {
+            tmp_stack.add(Math.cos(result));
+        } else if (Objects.equals(operator, "tan")) {
+            tmp_stack.add(Math.tan(result));
+        } else if (Objects.equals(operator, "ln")) {
+            tmp_stack.add(Math.log(result));
+        } else if (Objects.equals(operator, "log")) {
+            tmp_stack.add(Math.log10(result));
+        } else if (Objects.equals(operator, "sqrt")) {
+            tmp_stack.add(Math.sqrt(result));
+        } else if (Objects.equals(operator, "asin")) {
+            tmp_stack.add(Math.asin(result));
+        } else if (Objects.equals(operator, "acos")) {
+            tmp_stack.add(Math.acos(result));
+        } else if (Objects.equals(operator, "atan")) {
+            tmp_stack.add(Math.atan(result));
+        }
     }
 }
