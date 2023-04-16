@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class ReadmeView extends JPanel{
     final JFrame readmeWindow = new JFrame("ReadMe");
-    JTextArea output;
+
     public ReadmeView() {
         readmeWindow.setSize(320, 357);
         readmeWindow.add(this);

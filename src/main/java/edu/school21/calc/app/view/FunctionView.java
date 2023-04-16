@@ -101,7 +101,6 @@ public class FunctionView extends JPanel {
                                     presenter.doFunctions(x1, x2, y1, y2, f);
                                 } catch (Exception w3) {
                                     set("Draw error");
-                                    System.out.println(w3);
                                 }
                             } else {
                                 set("Bad Y");

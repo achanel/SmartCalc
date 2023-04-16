@@ -48,7 +48,8 @@ public class CalcView extends JPanel{
     public void addPresenter(final Presenter p){
         presenter = p;
     }
-    public CalcView(){
+    public CalcView() {
+
         final JFrame window = new JFrame("SmartCalc");
         window.setSize(370, 447);
         window.add(this);
@@ -109,23 +110,23 @@ public class CalcView extends JPanel{
             } else if (b == dev) {
                 output.setText(output.getText() + "/");
             } else if (b == sin) {
-                output.setText(output.getText() + "sin");
+                output.setText(output.getText() + "sin(");
             } else if (b == cos) {
-                output.setText(output.getText() + "cos");
+                output.setText(output.getText() + "cos(");
             } else if (b == tan) {
-                output.setText(output.getText() + "tan");
+                output.setText(output.getText() + "tan(");
             } else if (b == asin) {
-                output.setText(output.getText() + "asin");
+                output.setText(output.getText() + "asin(");
             } else if (b == acos) {
-                output.setText(output.getText() + "acos");
+                output.setText(output.getText() + "acos(");
             } else if (b == atan) {
-                output.setText(output.getText() + "atan");
+                output.setText(output.getText() + "atan(");
             } else if (b == ln) {
-                output.setText(output.getText() + "ln");
+                output.setText(output.getText() + "ln(");
             } else if (b == log) {
-                output.setText(output.getText() + "log");
+                output.setText(output.getText() + "log(");
             } else if (b == sqrt) {
-                output.setText(output.getText() + "sqrt");
+                output.setText(output.getText() + "sqrt(");
             } else if (b == pow) {
                 output.setText(output.getText() + "^");
             } else if (b == mod) {
@@ -159,9 +160,7 @@ public class CalcView extends JPanel{
                     depositView.addPresenter(presenter);
                 });
             } else if (b == readme) {
-                SwingUtilities.invokeLater(() -> {
-                        ReadmeView readmeView = new ReadmeView();
-                });
+                SwingUtilities.invokeLater(ReadmeView::new);
             }
         };
         addKeyListener(new KeyAdapter() {
@@ -306,9 +305,4 @@ public class CalcView extends JPanel{
             presenter.printHistory(Double.toString(result), 1);
         }
     }
-
-//    public void printError(){
-////        output.setForeground(Color.RED);
-//        output.setText("ERROR!");
-//    }
 }

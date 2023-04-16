@@ -180,9 +180,8 @@ public class DepositView extends JPanel{
                 paymentInput.setEnabled(true);
             }
         });
-        replenishmentInput.addActionListener(e -> {
-            repSumInput.setEditable(!Objects.equals(replenishmentInput.getSelectedItem(), "не предусмотрено"));
-        });
+        replenishmentInput.addActionListener(e ->
+                repSumInput.setEditable(!Objects.equals(replenishmentInput.getSelectedItem(), "не предусмотрено")));
 
         durationField.addActionListener(e -> {
             if (Objects.equals(durationField.getSelectedItem(), "Задать свой")) {
@@ -197,14 +196,14 @@ public class DepositView extends JPanel{
 
     public void printDeposit(double sum, double percent, double tax, double payment){
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        if (paymentInput.getSelectedItem().equals("нет")) {
+        if (Objects.equals(paymentInput.getSelectedItem(), "нет")) {
             output.append("Начисленные проценты: " + decimalFormat.format(percent) +
-                    "\nCумма налога: " + decimalFormat.format(tax) +
-                    "\nCумма на вкладе к концу срока :" + decimalFormat.format(sum));
+                    "\nСумма налога: " + decimalFormat.format(tax) +
+                    "\nСумма на вкладе к концу срока :" + decimalFormat.format(sum));
         } else {
             output.append("Начисленные проценты: " + decimalFormat.format(percent) +
-                    "\nCумма налога: " + decimalFormat.format(tax) +
-                    "\nCумма на вкладе к концу срока :" + decimalFormat.format(sum) +
+                    "\nСумма налога: " + decimalFormat.format(tax) +
+                    "\nСумма на вкладе к концу срока :" + decimalFormat.format(sum) +
                     "\nКаждая выплата: " + decimalFormat.format(payment));
         }
     }

@@ -35,17 +35,16 @@ public class Presenter implements ViewListener {
 
     @Override
     public void printHistory(String str, int flag){
-        try (FileOutputStream fileOutputStream = new FileOutputStream("target/calcHistory.txt", true)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream("/Users/achanel/Desktop/SMFiles/calcHistory.txt", true)) {
             if (!str.equals("")) {
                 if (flag == 0) {
                     fileOutputStream.write((str + " = ").getBytes());
                 } else {
                     fileOutputStream.write((str + "\n").getBytes());
                 }
-            } else return;
+            }
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
-//            calcView.printError();
         }
     }
     @Override
@@ -63,7 +62,7 @@ public class Presenter implements ViewListener {
         int skipLine = 0;
         List<String> stringList = new LinkedList<>();
         try {
-            Scanner sc = new Scanner(new File("target/calcHistory.txt"));
+            Scanner sc = new Scanner(new File("/Users/achanel/Desktop/SMFiles/calcHistory.txt"));
             String strFromFile;
             while(sc.hasNextLine()){
                 skipLine++;
@@ -84,7 +83,7 @@ public class Presenter implements ViewListener {
     public String clearHistory() {
         String ret = "success";
         try {
-            Files.delete(Paths.get("target/calcHistory.txt"));
+            Files.delete(Paths.get("/Users/achanel/Desktop/SMFiles/calcHistory.txt"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             ret = "fail";
@@ -94,7 +93,7 @@ public class Presenter implements ViewListener {
 
     @Override
     public void doFunctions(double x1, double x2, double y1, double y2, String s) {
-        FunctionDraw functionDraw = new FunctionDraw(x1, x2, y1, y2, s);
+        FunctionDraw functionDraw = new FunctionDraw(x1, x2, y1, y2);
         functionDraw.addPresenter(this);
         functionModel = new FunctionModel(s);
     }

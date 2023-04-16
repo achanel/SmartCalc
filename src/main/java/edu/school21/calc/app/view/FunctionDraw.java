@@ -1,20 +1,15 @@
 package edu.school21.calc.app.view;
 
-import edu.school21.calc.app.models.FunctionModel;
 import edu.school21.calc.app.presenter.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
 public class FunctionDraw extends JPanel{
     private Presenter presenter;
-    double[] X;
     double x1, x2, y1, y2, step_x, step_y;
     int WIDTH;
     int HEIGHT;
@@ -24,7 +19,7 @@ public class FunctionDraw extends JPanel{
     public void addPresenter(final Presenter p){
         presenter = p;
     }
-    public FunctionDraw(double x1, double x2, double y1, double y2, String s) {
+    public FunctionDraw(double x1, double x2, double y1, double y2) {
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
@@ -70,7 +65,7 @@ public class FunctionDraw extends JPanel{
 
             @Override
             public void mouseDragged(MouseEvent evt) {
-                if (evt.getModifiers() == evt.BUTTON1_MASK) {
+                if (evt.getModifiers() == InputEvent.BUTTON1_MASK) {
                     int newX = evt.getX();
                     int newY = evt.getY();
 
@@ -87,7 +82,7 @@ public class FunctionDraw extends JPanel{
                     lastY = newY;
 
                     repaint();
-                } else if (evt.getModifiers() == evt.BUTTON3_MASK) {
+                } else if (evt.getModifiers() == InputEvent.BUTTON3_MASK) {
 
                     int newX = evt.getX();
                     int newY = evt.getY();
@@ -110,23 +105,20 @@ public class FunctionDraw extends JPanel{
         addMouseListener(MA);
         addMouseMotionListener(MA);
 
-        this.addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
+        this.addMouseWheelListener(e -> {
 
-                int r = e.getWheelRotation();
+            int r = e.getWheelRotation();
 
-                double dx = (x2 - x1) / (10 + Math.abs(r + 1) / 2);
-                double dy = (y2 - y1) / (10 + Math.abs(r + 1) / 2);
+            double dx = (x2 - x1) / (10 + Math.abs(r + 1) / 2);
+            double dy = (y2 - y1) / (10 + Math.abs(r + 1) / 2);
 
-                x1 -= r * dx * lastX / WIDTH;
-                x2 += r * dx * (WIDTH - lastX) / WIDTH;
-                y1 -= r * dy * (HEIGHT - lastY) / HEIGHT;
-                y2 += r * dy * lastY / HEIGHT;
+            x1 -= r * dx * lastX / WIDTH;
+            x2 += r * dx * (WIDTH - lastX) / WIDTH;
+            y1 -= r * dy * (HEIGHT - lastY) / HEIGHT;
+            y2 += r * dy * lastY / HEIGHT;
 
-                repaint();
+            repaint();
 
-            }
         });
 
 
@@ -177,7 +169,7 @@ public class FunctionDraw extends JPanel{
                 format = 10;
             }
 
-            g.drawString(String.format("%." + String.valueOf(format) + "f", i * step_x), positionX + 2, positionY);
+            g.drawString(String.format("%." + format + "f", i * step_x), positionX + 2, positionY);
         }
 
         for (int i = (int) Math.floor(y1 / step_y); i <= Math.floor(y2 / step_y); i++) {
@@ -195,9 +187,9 @@ public class FunctionDraw extends JPanel{
                 format = 10;
             }
 
-            String formated_value = String.format("%." + String.valueOf(format) + "f", i * step_y);
+            String formatted_value = String.format("%." + format + "f", i * step_y);
 
-            int len = (int) new TextLayout(formated_value, g.getFont(), new FontRenderContext(null, true, true)).getBounds().getWidth();
+            int len = (int) new TextLayout(formatted_value, g.getFont(), new FontRenderContext(null, true, true)).getBounds().getWidth();
 
             if (OX < 1) {
                 positionX = 2;
@@ -207,7 +199,7 @@ public class FunctionDraw extends JPanel{
                 positionX = OX + 2;
             }
 
-            g.drawString(formated_value, positionX, positionY - 1);
+            g.drawString(formatted_value, positionX, positionY - 1);
         }
 
         g.setColor(Color.BLACK);

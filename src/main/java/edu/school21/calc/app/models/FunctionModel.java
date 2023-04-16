@@ -9,26 +9,26 @@ public class FunctionModel {
         ArrayList<String> list = new ArrayList<>();
         list.add("(");
 
-        String[] ar = new String[1];
+        String[] ar;
 
         ar = (Func + " ").split(" ");
 
-        String f = "";
+        StringBuilder f = new StringBuilder();
 
-        for (int i = 0; i < ar.length; i++) {
-            f = f + ar[i];
+        for (String value : ar) {
+            f.append(value);
         }
 
-        ar = f.split("");
+        ar = f.toString().split("");
         int ind = 0;
         for (int i = 0; i < ar.length; i++) {
             if (ar[i].equals("+") | ar[i].equals("-") | ar[i].equals("*") | ar[i].equals("/") | ar[i].equals("(") | ar[i].equals(")") | ar[i].equals("^")) {
 
-                String s = "";
+                StringBuilder s = new StringBuilder();
                 for (int j = ind; j < i; j++) {
-                    s = s + ar[j];
+                    s.append(ar[j]);
                 }
-                list.add(s);
+                list.add(s.toString());
                 list.add(ar[i]);
                 ind = i + 1;
             } else {
@@ -54,11 +54,11 @@ public class FunctionModel {
 
 
 
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int j = ind; j < ar.length; j++) {
-            s = s + ar[j];
+            s.append(ar[j]);
         }
-        list.add(s);
+        list.add(s.toString());
 
         int q = 0;
         while (q == 0) {
@@ -87,8 +87,8 @@ public class FunctionModel {
         }
 
         post = new ArrayList<>();
-        ArrayList<String> steck = new ArrayList<>();
-        steck.add("");
+        ArrayList<String> stack = new ArrayList<>();
+        stack.add("");
         list.add(")");
         list.add("?");
 
@@ -97,33 +97,33 @@ public class FunctionModel {
         while (!list.get(i).equals("?")) {
 
             if (list.get(i).equals("(")) {
-                steck.add("(");
+                stack.add("(");
                 i++;
             } else if (list.get(i).equals("*") | list.get(i).equals("/")) {
-                if (steck.get(steck.size() - 1).equals("*") | steck.get(steck.size() - 1).equals("/")) {
-                    post.add(steck.get(steck.size() - 1));
-                    steck.remove(steck.size() - 1);
+                if (stack.get(stack.size() - 1).equals("*") | stack.get(stack.size() - 1).equals("/")) {
+                    post.add(stack.get(stack.size() - 1));
+                    stack.remove(stack.size() - 1);
                 } else {
-                    steck.add(list.get(i));
+                    stack.add(list.get(i));
                     i++;
                 }
             } else if (list.get(i).equals("+") | list.get(i).equals("-")) {
-                if (steck.get(steck.size() - 1).equals("(")) {
-                    steck.add(list.get(i));
+                if (stack.get(stack.size() - 1).equals("(")) {
+                    stack.add(list.get(i));
                     i++;
                 } else {
-                    post.add(steck.get(steck.size() - 1));
-                    steck.remove(steck.size() - 1);
+                    post.add(stack.get(stack.size() - 1));
+                    stack.remove(stack.size() - 1);
                 }
             } else if (list.get(i).equals(")")) {
-                while (!steck.get(steck.size() - 1).equals("(")) {
-                    post.add(steck.get(steck.size() - 1));
-                    steck.remove(steck.size() - 1);
+                while (!stack.get(stack.size() - 1).equals("(")) {
+                    post.add(stack.get(stack.size() - 1));
+                    stack.remove(stack.size() - 1);
                 }
                 i++;
-                steck.remove(steck.size() - 1);
+                stack.remove(stack.size() - 1);
             } else if (list.get(i).equals("^") | list.get(i).equals("sin") | list.get(i).equals("cos") | list.get(i).equals("tg") | list.get(i).equals("ctg") | list.get(i).equals("lg") | list.get(i).equals("ln")) {
-                steck.add(list.get(i));
+                stack.add(list.get(i));
                 i++;
             } else {
                 post.add(list.get(i));

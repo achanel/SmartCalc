@@ -1,9 +1,15 @@
 package edu.school21.calc.app.models;
 
+import org.apache.log4j.Logger;
+
 import java.util.Stack;
 import java.util.Objects;
 
+import static java.lang.Character.isDigit;
+
 public class CalcModel {
+
+    final static Logger logger = Logger.getLogger(CalcModel.class);
     short NUMBER = 0;
     short PLUS_MINUS = 1;
     short MUL_DIV_MOD = 2;
@@ -13,7 +19,8 @@ public class CalcModel {
 
     private final short priority;
     private final String operator;
-    private final double value;
+
+    private double value;
 
     public CalcModel(double value, String operator, short priority) {
         this.value = value;
@@ -29,14 +36,25 @@ public class CalcModel {
         return operator;
     }
 
-    public double doCalculation(String in){
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public double doCalculation(String in) {
+        double result;
         Stack<CalcModel> stack = new Stack<>();
         replace(in);
-        if(!validation(in)) /*проверить!!! ошибка на (i - 1)*/
+        if(!validation(in))
             throw new RuntimeException();
         mainParser(in, stack);
         stack = polishNotation(stack);
-        return(calculateExpression(stack));
+        result = calculateExpression(stack);
+        logger.info(in + " = " + result);
+        return(result);
     }
 
     void operatorParser(char symbol, Stack<CalcModel> stack) {
@@ -100,9 +118,9 @@ public class CalcModel {
     
     private void mainParser(String in, Stack<CalcModel> stack) {
         for (int i = 0; i < in.length(); i++) {
-            if (Character.isDigit(in.charAt(i)) || in.charAt(i) == '.') {
+            if (isDigit(in.charAt(i)) || in.charAt(i) == '.') {
                 StringBuilder num = new StringBuilder();
-                while (Character.isDigit(in.charAt(i)) || in.charAt(i) == '.'){
+                while (isDigit(in.charAt(i)) || in.charAt(i) == '.'){
                     num.append(in.charAt(i));
                     i++;
                     if (i == in.length())
@@ -129,8 +147,7 @@ public class CalcModel {
     }
 
     boolean validation(String str){
-//        return validationBrackets(str) && operatorAndDigitsValidation(str);
-        return validationBrackets(str);
+        return validationBrackets(str) && operatorAndDigitsValidation(str);
     }
 
     private boolean validationBrackets(String str) {
@@ -150,45 +167,36 @@ public class CalcModel {
         return result;
     }
 
-//    private boolean operatorAndDigitsValidation(String str) {
-//        boolean result = true;
-//        for (int i = 0; i < str.length(); i++) {
-//            if (str.charAt(i) == '.' && (!Character.isDigit(str.charAt(i + 1)) || !Character.isDigit(str.charAt(i - 1)))) {
-//                result = false;
-//            } else if (isOperator(str.charAt(i))) {
-//                if (str.charAt(i) == '%' && isOperator(str.charAt(i - 1))) {
-//                    result = false;
-//                } else if (str.charAt(i) == '+' || str.charAt(i) == '-') {
-//                    if (isOperator(str.charAt(i + 1)) || isOperator(str.charAt(i - 1)))
-//                        result = false;
-//                    else if (str.charAt(i + 1) == ')')
-//                        result = false;
-//                } else if (str.charAt(i) == '*' || str.charAt(i) == '/' || str.charAt(i) == '^') {
-//                    if (isOperator(str.charAt(i + 1)) || isOperator(str.charAt(i - 1)))
-//                        result = false;
-//                    else if (str.charAt(i + 1) == ')' || str.charAt(i - 1) == '(')
-//                        result = false;
-//                } else if (isFunction(str.charAt(i))) {
-//                    if (!isOperator(str.charAt(i - 1))) result = false;
-//                } else if (str.charAt(i) == 'm' && !Character.isDigit(str.charAt(i - 1))) {
-//                    result = false;
-//                }
-//            } else if (isFunction(str.charAt(i)) && str.charAt(i - 1) == ')') {
-//                result = false;
-//            } else if (str.charAt(i) == '(' || str.charAt(i) == ')') {
-//                if (i != 0 && str.charAt(i) != str.charAt(str.length() - 1)) {
-//                    if (!isOperator(str.charAt(i - 1)) && str.charAt(i) == '(' && str.charAt(i - 1) != '(' &&
-//                            (!isFunction(str.charAt(i - 3)) && !isFunction(str.charAt(i - 2)) &&
-//                    !isFunction(str.charAt(i - 4)))) {
-//                        result = false;
-//                    } else if (!isOperator(str.charAt(i + 1)) && str.charAt(i) == ')' && str.charAt(i + 1) != ')') {
-//                        result = false;
-//                    }
-//                }
-//            }
-//        }
-//        return result;
-//    }
+    private boolean operatorAndDigitsValidation(String str) {
+        boolean result = true;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '.') {
+                if (i == 0) {
+                    if (!isDigit(str.charAt(i + 1))) {
+                        result = false;
+                        break;
+                    }
+                } else {
+                    if (!isDigit(str.charAt(i + 1)) || !isDigit(str.charAt(i - 1))) {
+                        result = false;
+                        break;
+                    }
+                }
+                result = false;
+            } else if (str.charAt(i) == '(' || str.charAt(i) == ')') {
+                if (i != 0 && str.charAt(i) != str.charAt(str.length() - 1)) {
+                    if (!isOperator(str.charAt(i - 1)) && str.charAt(i) == '(' && str.charAt(i - 1) != '(' &&
+                            (!isFunction(str.charAt(i - 3)) && !isFunction(str.charAt(i - 2)) &&
+                    !isFunction(str.charAt(i - 4)))) {
+                        result = false;
+                    } else if (!isOperator(str.charAt(i + 1)) && str.charAt(i) == ')' && str.charAt(i + 1) != ')') {
+                        result = false;
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
     boolean isOperator(char symbol) {
         return symbol == '^' || symbol == '*' || symbol == '+' || symbol == '-' ||
@@ -210,17 +218,22 @@ public class CalcModel {
     Stack<CalcModel> polishNotation(Stack<CalcModel> stack) {
         Stack<CalcModel> ready = new Stack<>();
         Stack<CalcModel> support = new Stack<>();
+        for (int j = 0; j < stack.size(); j++) {
+            if (stack.get(j).getOperator().equals("-") && stack.get(j + 1).getPriority() == NUMBER) {
+                double x = stack.get(j + 1).getValue();
+                stack.get(j + 1).setValue(0 - x);
+                stack.remove(j);
+            }
+        }
         for (CalcModel i : stack) {
             if (i.getPriority() == NUMBER) {
                 ready.add(i);
             } else {
                 if (Objects.equals(i.getOperator(), "(") &&
                         i.getPriority() ==
-                                BRACKETS) {  // Если скобка открылась, то пушим ее в саппорт
+                                BRACKETS) {
                     support.add(i);
                 } else {
-                    // Если скобка закрылась, начинаем доставать из саппорта все, пока не
-                    // встретим открытую скобку
                     if (Objects.equals(i.getOperator(), ")")) {
                         while (!support.isEmpty() && !Objects.equals(support.get(support.size() - 1).getOperator(), "(")) {
                             CalcModel elem = support.get(support.size() - 1);
