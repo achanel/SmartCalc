@@ -183,17 +183,11 @@ public class CalcModel {
                     }
                 }
                 result = false;
-            } else if (str.charAt(i) == '(' || str.charAt(i) == ')') {
-                if (i != 0 && str.charAt(i) != str.charAt(str.length() - 1)) {
-                    if (!isOperator(str.charAt(i - 1)) && str.charAt(i) == '(' && str.charAt(i - 1) != '(' &&
-                            (!isFunction(str.charAt(i - 3)) && !isFunction(str.charAt(i - 2)) &&
-                    !isFunction(str.charAt(i - 4)))) {
-                        result = false;
-                    } else if (!isOperator(str.charAt(i + 1)) && str.charAt(i) == ')' && str.charAt(i + 1) != ')') {
-                        result = false;
-                    }
-                }
             }
+        }
+        if ((str.contains("(") && !str.contains(")"))
+                || (str.contains(")") && !str.contains("("))) {
+            result = false;
         }
         return result;
     }
@@ -219,10 +213,13 @@ public class CalcModel {
         Stack<CalcModel> ready = new Stack<>();
         Stack<CalcModel> support = new Stack<>();
         for (int j = 0; j < stack.size(); j++) {
-            if (stack.get(j).getOperator().equals("-") && stack.get(j + 1).getPriority() == NUMBER) {
-                double x = stack.get(j + 1).getValue();
-                stack.get(j + 1).setValue(0 - x);
-                stack.remove(j);
+            if (j == 0 || (j != 0 && stack.get(j - 1).getOperator().equals("(")
+                    && stack.get(j).getOperator().equals("-"))) {
+                if (stack.get(j).getOperator().equals("-") && stack.get(j + 1).getPriority() == NUMBER) {
+                    double x = stack.get(j + 1).getValue();
+                    stack.get(j + 1).setValue(0 - x);
+                    stack.remove(j);
+                }
             }
         }
         for (CalcModel i : stack) {
